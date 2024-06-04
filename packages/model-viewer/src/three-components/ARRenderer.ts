@@ -763,13 +763,12 @@ export class ARRenderer extends EventDispatcher<
     for (const view of pose.views) {
       this.updateView(view);
 
-      const delta = time - this.lastTick!;
-
       if (isFirstView) {
         this.moveToFloor(frame);
 
         this.processInput(frame);
 
+        const delta = time - this.lastTick!;
         this.moveScene(delta);
         this.renderer.preRender(scene, time, delta);
         this.lastTick = time;
@@ -777,16 +776,7 @@ export class ARRenderer extends EventDispatcher<
         scene.renderShadow(this.threeRenderer);
       }
 
-      // this.threeRenderer.render(scene, scene.getCamera());
-      
-      if (scene.effectRenderer != null) {
-        scene.effectRenderer.render(delta);
-      } else {
-        this.threeRenderer.autoClear = true;  // this might get reset by the effectRenderer
-        this.threeRenderer.toneMapping = scene.toneMapping;
-        this.threeRenderer.render(scene, scene.getCamera());
-      }
-
+      this.threeRenderer.render(scene, scene.getCamera());
       isFirstView = false;
     }
   }

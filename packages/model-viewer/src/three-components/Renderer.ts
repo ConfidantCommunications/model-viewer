@@ -503,7 +503,6 @@ export class Renderer extends
         this.threeRenderer.toneMapping = scene.toneMapping;
         this.threeRenderer.render(scene, scene.camera);
       }
-      console.log("allan was here");
       if (this.multipleScenesVisible ||
           (!scene.element.modelIsVisible && scene.renderCount === 0)) {
         this.copyPixels(scene, width, height);
