@@ -135,7 +135,7 @@ export class Renderer extends
     super();
 
     this.dpr = resolveDpr();
-
+    console.log("making canvas3D");
     this.canvas3D = document.createElement('canvas');
     this.canvas3D.id = 'webgl-canvas';
     this.canvas3D.classList.add('show');
@@ -493,8 +493,8 @@ export class Renderer extends
       // Need to set the render target in order to prevent
       // clearing the depth from a different buffer
       this.threeRenderer.setRenderTarget(null);
-      this.threeRenderer.setViewport(
-          0, Math.ceil(this.height * this.dpr) - height, width, height);
+      this.threeRenderer.setViewport(0, Math.ceil(this.height * this.dpr) - height, width, height);
+      
       if (scene.effectRenderer != null) {
         scene.effectRenderer.render(delta);
       } else {
@@ -503,7 +503,7 @@ export class Renderer extends
         this.threeRenderer.toneMapping = scene.toneMapping;
         this.threeRenderer.render(scene, scene.camera);
       }
-      console.log("renderer");
+      // console.log("renderer");
       if (this.multipleScenesVisible ||
           (!scene.element.modelIsVisible && scene.renderCount === 0)) {
         this.copyPixels(scene, width, height);

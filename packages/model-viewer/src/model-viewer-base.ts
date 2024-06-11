@@ -63,6 +63,7 @@ export const $scene = Symbol('scene');
 export const $needsRender = Symbol('needsRender');
 export const $tick = Symbol('tick');
 export const $onModelLoad = Symbol('onModelLoad');
+export const $bakeSceneToCurrentGltf = Symbol('bakeSceneToCurrentGltf');
 export const $onResize = Symbol('onResize');
 export const $renderer = Symbol('renderer');
 export const $progressTracker = Symbol('progressTracker');
@@ -218,6 +219,16 @@ export default class ModelViewerElementBase extends ReactiveElement {
   get loaded() {
     return this[$getLoaded]();
   }
+
+  /** @export */
+  bakeSceneToCurrentGltf() {
+    console.log("baking scene!");
+    this[$bakeSceneToCurrentGltf]();
+  }
+  // /** @export */
+  // triggerOnModelLoad() {
+  //   this[$onModelLoad]();
+  // }
 
   get[$renderer]() {
     return Renderer.singleton;
@@ -376,12 +387,14 @@ export default class ModelViewerElementBase extends ReactiveElement {
     renderer.unregisterScene(this[$scene]);
 
     this[$clearModelTimeout] = self.setTimeout(() => {
+      console.log("disposing model!")
       this[$scene].dispose();
       this[$clearModelTimeout] = null;
     }, CLEAR_MODEL_TIMEOUT_MS);
   }
 
   updated(changedProperties: Map<string|number|symbol, any>) {
+    console.log("updated!")
     super.updated(changedProperties);
 
     // NOTE(cdata): If a property changes from values A -> B -> A in the space
@@ -389,6 +402,7 @@ export default class ModelViewerElementBase extends ReactiveElement {
     // though the value has effectively not changed, so we need to check to make
     // sure that the value has actually changed before changing the loaded flag.
     if (changedProperties.has('src')) {
+      console.log("updated src!")
       if (this.src == null) {
         this[$loaded] = false;
         this[$loadedTime] = 0;
@@ -405,11 +419,13 @@ export default class ModelViewerElementBase extends ReactiveElement {
     }
 
     if (changedProperties.has('withCredentials')) {
+      console.log("updated credentials!")
       CachingGLTFLoader.withCredentials = this.withCredentials;
       this[$renderer].textureUtils!.withCredentials = this.withCredentials;
     }
 
     if (changedProperties.has('generateSchema')) {
+      console.log("updated schema!")
       if (this.generateSchema) {
         this[$scene].updateSchema(this.src);
       } else {
@@ -562,6 +578,8 @@ export default class ModelViewerElementBase extends ReactiveElement {
   }
 
   [$onModelLoad]() {
+  }
+  [$bakeSceneToCurrentGltf]() {
   }
 
   [$updateStatus](status: string) {

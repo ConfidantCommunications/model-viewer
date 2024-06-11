@@ -415,11 +415,14 @@ configuration or device capabilities');
       anchor.removeChild(img);
       if (generateUsdz) {
         URL.revokeObjectURL(objectURL);
+      } else {
+        debugger;
       }
       this[$arButtonContainer].classList.add('enabled');
     }
 
     async prepareUSDZ(): Promise<string> {
+      console.log('Preparing USDZ...');
       const updateSourceProgress =
           this[$progressTracker].beginActivity('usdz-conversion');
 
@@ -427,6 +430,8 @@ configuration or device capabilities');
 
       const {model, shadow, target} = this[$scene];
       if (model == null) {
+        console.warn('Cannot prepare USDZ without a model');
+        // debugger
         return '';
       }
 

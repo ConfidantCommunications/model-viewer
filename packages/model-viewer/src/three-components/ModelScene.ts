@@ -282,6 +282,7 @@ export class ModelScene extends Scene {
   }
 
   reset() {
+    console.log('reset scene!');
     this.url = null;
     this.renderCount = 0;
     this.queueRender();
@@ -1033,6 +1034,7 @@ export class ModelScene extends Scene {
   }
 
   updateSchema(src: string|null) {
+    console.log('update schema!');
     const {schemaElement, element} = this;
     const {alt, poster, iosSrc} = element;
     if (src != null) {

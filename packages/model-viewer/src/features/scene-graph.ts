@@ -17,7 +17,7 @@ import {property} from 'lit/decorators.js';
 import {CanvasTexture, RepeatWrapping, SRGBColorSpace, Texture, VideoTexture} from 'three';
 import {GLTFExporter, GLTFExporterOptions} from 'three/examples/jsm/exporters/GLTFExporter.js';
 
-import ModelViewerElementBase, {$needsRender, $onModelLoad, $progressTracker, $renderer, $scene} from '../model-viewer-base.js';
+import ModelViewerElementBase, {$needsRender, $onModelLoad, $bakeSceneToCurrentGltf, $progressTracker, $renderer, $scene} from '../model-viewer-base.js';
 import {GLTF} from '../three-components/gltf-instance/gltf-defaulted.js';
 import {ModelViewerGLTFInstance} from '../three-components/gltf-instance/ModelViewerGLTFInstance.js';
 import GLTFExporterMaterialsVariantsExtension from '../three-components/gltf-instance/VariantMaterialExporterPlugin.js';
@@ -168,7 +168,7 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
 
     async updated(changedProperties: Map<string, any>) {
       super.updated(changedProperties);
-
+      // debugger;
       if (changedProperties.has('variantName')) {
         const updateVariantProgress = this[$progressTracker].beginActivity('variant-update');
         updateVariantProgress(0.1);
@@ -199,8 +199,9 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
 
     [$onModelLoad]() {
       super[$onModelLoad]();
-
-      const {currentGLTF} = this[$scene];
+      console.log('[$onModelLoad] called');
+      debugger;
+      const {currentGLTF} = this[$scene];//equivalent to this[$scene].currentGLTF
 
       if (currentGLTF != null) {
         const {correlatedSceneGraph} = currentGLTF;
@@ -222,6 +223,42 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
       }
 
       this[$currentGLTF] = currentGLTF;
+    }
+
+
+    
+    [$bakeSceneToCurrentGltf]() {
+      super[$bakeSceneToCurrentGltf]();
+      // const {currentGLTF} = this[$scene];
+      if (this[$scene].model != null || this[$scene].currentGLTF != null) {
+        console.log('[$bakeSceneToCurrentGltf] called but didn’t work');
+        return;
+      }
+      const exporter = new GLTFExporter();
+      console.log("generating gltf…")
+      exporter.parse(
+        this[$scene],
+        (rawGLTF: any) => {
+          console.log('GLTF generated');
+          this[$currentGLTF] = rawGLTF;
+
+          //borrowed from onModelLoad:
+          const {correlatedSceneGraph} = rawGLTF;
+          if (correlatedSceneGraph != null) {
+            this[$model] =
+                new Model(correlatedSceneGraph, this[$getOnUpdateMethod]());
+            this[$originalGltfJson] =
+                JSON.parse(JSON.stringify(correlatedSceneGraph.gltf));
+          }
+        },
+        // called when there is an error in the generation
+        function (error) {
+
+          console.log('An error happened:'+error);
+
+        },
+        {}
+      );
     }
 
     /** @export */

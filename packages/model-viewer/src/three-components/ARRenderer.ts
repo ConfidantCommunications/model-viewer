@@ -777,15 +777,31 @@ export class ARRenderer extends EventDispatcher<
         scene.renderShadow(this.threeRenderer);
       }
 
-      // this.threeRenderer.render(scene, scene.getCamera());
-      
-      if (scene.effectRenderer != null) {
+      this.threeRenderer.render(scene, scene.getCamera());
+      /* if (scene.externalRenderer != null) {
+        console.log("rendering externalRenderer"); 
+        const camera = scene.getCamera();
+        camera.updateMatrix();
+        const {matrix, projectionMatrix} = camera;
+        const viewMatrix = matrix.elements.slice();
+        const target = scene.getTarget();
+        viewMatrix[12] += target.x;
+        viewMatrix[13] += target.y;
+        viewMatrix[14] += target.z;
+
+        scene.externalRenderer.render({
+          viewMatrix: viewMatrix,
+          projectionMatrix: projectionMatrix.elements
+        });
+        // continue;
+      } else if (scene.effectRenderer != null) {
+        console.log("rendering effectRenderer");
         scene.effectRenderer.render(delta);
       } else {
         this.threeRenderer.autoClear = true;  // this might get reset by the effectRenderer
         this.threeRenderer.toneMapping = scene.toneMapping;
         this.threeRenderer.render(scene, scene.getCamera());
-      }
+      } */
 
       isFirstView = false;
     }
