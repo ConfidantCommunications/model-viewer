@@ -394,7 +394,7 @@ export default class ModelViewerElementBase extends ReactiveElement {
   }
 
   updated(changedProperties: Map<string|number|symbol, any>) {
-    console.log("updated!")
+    console.log("updated!"+changedProperties);
     super.updated(changedProperties);
 
     // NOTE(cdata): If a property changes from values A -> B -> A in the space
@@ -402,11 +402,12 @@ export default class ModelViewerElementBase extends ReactiveElement {
     // though the value has effectively not changed, so we need to check to make
     // sure that the value has actually changed before changing the loaded flag.
     if (changedProperties.has('src')) {
-      console.log("updated src!")
+      console.log("updated src!");
       if (this.src == null) {
         this[$loaded] = false;
         this[$loadedTime] = 0;
         this[$scene].reset();
+        console.log("resetting scene!");
       } else if (this.src !== this[$scene].url) {
         this[$loaded] = false;
         this[$loadedTime] = 0;

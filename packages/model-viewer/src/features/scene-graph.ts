@@ -16,8 +16,9 @@
 import {property} from 'lit/decorators.js';
 import {CanvasTexture, RepeatWrapping, SRGBColorSpace, Texture, VideoTexture} from 'three';
 import {GLTFExporter, GLTFExporterOptions} from 'three/examples/jsm/exporters/GLTFExporter.js';
-
-import ModelViewerElementBase, {$needsRender, $onModelLoad, $bakeSceneToCurrentGltf, $progressTracker, $renderer, $scene} from '../model-viewer-base.js';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
+import {CorrelatedSceneGraph} from '../three-components/gltf-instance/correlated-scene-graph.js';
+import ModelViewerElementBase, {$needsRender, $onModelLoad, $markLoaded, $bakeSceneToCurrentGltf, $progressTracker, $renderer, $scene} from '../model-viewer-base.js';
 import {GLTF} from '../three-components/gltf-instance/gltf-defaulted.js';
 import {ModelViewerGLTFInstance} from '../three-components/gltf-instance/ModelViewerGLTFInstance.js';
 import GLTFExporterMaterialsVariantsExtension from '../three-components/gltf-instance/VariantMaterialExporterPlugin.js';
@@ -27,7 +28,8 @@ import {Image, PBRMetallicRoughness, Sampler, TextureInfo} from './scene-graph/a
 import {Material} from './scene-graph/material.js';
 import {$availableVariants, $materialFromPoint, $prepareVariantsForExport, $switchVariant, Model} from './scene-graph/model.js';
 import {Texture as ModelViewerTexture} from './scene-graph/texture.js';
-
+// import {PreparedModelViewerGLTF} from '../three-components/gltf-instance/ModelViewerGLTFInstance.js';
+import {PreparedGLTF} from '../three-components/GLTFInstance.js';
 
 
 export const $currentGLTF = Symbol('currentGLTF');
@@ -200,7 +202,7 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
     [$onModelLoad]() {
       super[$onModelLoad]();
       console.log('[$onModelLoad] called');
-      debugger;
+      // debugger;
       const {currentGLTF} = this[$scene];//equivalent to this[$scene].currentGLTF
 
       if (currentGLTF != null) {
@@ -240,16 +242,33 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
         this[$scene],
         (rawGLTF: any) => {
           console.log('GLTF generated');
+          //ALLAN: MAYBE DONT MAKE A PREPARED GLTF HERE
+          // let preparedGLTF:PreparedModelViewerGLTF;
+          // preparedGLTF = ModelViewerGLTFInstance.prepare(rawGLTF);
           this[$currentGLTF] = rawGLTF;
+          debugger;
 
           //borrowed from onModelLoad:
-          const {correlatedSceneGraph} = rawGLTF;
-          if (correlatedSceneGraph != null) {
-            this[$model] =
-                new Model(correlatedSceneGraph, this[$getOnUpdateMethod]());
-            this[$originalGltfJson] =
-                JSON.parse(JSON.stringify(correlatedSceneGraph.gltf));
-          }
+          // const {correlatedSceneGraph} = preparedGLTF;
+
+          // this expects a ThreeGLTF
+          // const correlatedSceneGraph:CorrelatedSceneGraph;
+          const gl = new GLTFLoader();
+          gl.parseAsync(rawGLTF,"").then( (finishedGltf) => {
+            // this[$currentGLTF] = finishedGltf;
+            const correlatedSceneGraph = CorrelatedSceneGraph.from(finishedGltf);
+  
+            if (correlatedSceneGraph != null) {
+              //"this" is possibly not available
+              this[$model] =
+                  new Model(correlatedSceneGraph, this[$getOnUpdateMethod]());
+              this[$originalGltfJson] = rawGLTF;
+                  // JSON.parse(JSON.stringify(correlatedSceneGraph.gltf));
+              this[$scene].model = this[$model];
+            }
+            this[$markLoaded]();
+          } );
+          
         },
         // called when there is an error in the generation
         function (error) {

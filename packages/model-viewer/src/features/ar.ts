@@ -426,12 +426,12 @@ configuration or device capabilities');
       const updateSourceProgress =
           this[$progressTracker].beginActivity('usdz-conversion');
 
-      await this[$triggerLoad]();
+      await this[$triggerLoad](); //should just skip since we called this[$markLoaded]();
 
+      debugger;
       const {model, shadow, target} = this[$scene];
       if (model == null) {
         console.warn('Cannot prepare USDZ without a model');
-        // debugger
         return '';
       }
 

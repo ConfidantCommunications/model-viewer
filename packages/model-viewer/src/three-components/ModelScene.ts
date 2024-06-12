@@ -313,6 +313,7 @@ export class ModelScene extends Scene {
   }
 
   dispose() {
+    console.log('dispose scene!');
     this.reset();
     if (this.shadow != null) {
       this.shadow.dispose();
