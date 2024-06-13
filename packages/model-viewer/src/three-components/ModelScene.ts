@@ -16,7 +16,7 @@
 import {ACESFilmicToneMapping, AnimationAction, AnimationActionLoopStyles, AnimationClip, AnimationMixer, Box3, Camera, Euler, Event as ThreeEvent, LoopPingPong, LoopRepeat, Material, Matrix3, Mesh, Object3D, PerspectiveCamera, Raycaster, Scene, Sphere, Texture, ToneMapping, Triangle, Vector2, Vector3, WebGLRenderer} from 'three';
 import {CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import {reduceVertices} from 'three/examples/jsm/utils/SceneUtils.js';
-
+import {GLTF} from '../three-components/gltf-instance/gltf-defaulted.js';
 import {$currentGLTF, $model, $originalGltfJson} from '../features/scene-graph.js';
 import {$nodeFromIndex, $nodeFromPoint} from '../features/scene-graph/model.js';
 import ModelViewerElementBase, {$renderer, EffectComposerInterface, RendererInterface} from '../model-viewer-base.js';
@@ -190,6 +190,21 @@ export class ModelScene extends Scene {
     this.target.add(model);
     await this.setupScene();
   }
+
+  /**
+   * Pass in a GLTF model that was baked after dynamic
+   */
+  async setBakedObject(obj:Object3D) {
+    // "this" is a ModelScene
+    //obj comes from gltf.scene which is a group (extending Object3D)
+    debugger;
+    obj.position.set(0,0,0);
+    this._model = obj;
+    this.target.add(obj);
+    
+  }
+
+
 
   /**
    * Sets the model via URL.

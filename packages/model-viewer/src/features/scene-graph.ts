@@ -242,10 +242,10 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
         this[$scene],
         (rawGLTF: any) => {
           console.log('GLTF generated');
-          //ALLAN: MAYBE DONT MAKE A PREPARED GLTF HERE
           // let preparedGLTF:PreparedModelViewerGLTF;
           // preparedGLTF = ModelViewerGLTFInstance.prepare(rawGLTF);
           this[$currentGLTF] = rawGLTF;
+          // const mvgi = this[$currentGLTF] as ModelViewerGLTFInstance;
           debugger;
 
           //borrowed from onModelLoad:
@@ -254,17 +254,17 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
           // this expects a ThreeGLTF
           // const correlatedSceneGraph:CorrelatedSceneGraph;
           const gl = new GLTFLoader();
+          //process the exported gltf (creates a gltf with a parser reference)
           gl.parseAsync(rawGLTF,"").then( (finishedGltf) => {
-            // this[$currentGLTF] = finishedGltf;
             const correlatedSceneGraph = CorrelatedSceneGraph.from(finishedGltf);
   
             if (correlatedSceneGraph != null) {
-              //"this" is possibly not available
-              this[$model] =
-                  new Model(correlatedSceneGraph, this[$getOnUpdateMethod]());
+              this[$model] = new Model(correlatedSceneGraph, this[$getOnUpdateMethod]());
               this[$originalGltfJson] = rawGLTF;
-                  // JSON.parse(JSON.stringify(correlatedSceneGraph.gltf));
-              this[$scene].model = this[$model];
+              //$scene is a ModelScene. Set its _model here:
+              this[$scene].setBakedObject(finishedGltf.scenes[0]);//scenes in a gltf are an array of groups extending object3d
+              // try this[$scene].setBakedObject(this[$model]);
+              
             }
             this[$markLoaded]();
           } );
