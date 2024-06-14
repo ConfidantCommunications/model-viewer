@@ -229,8 +229,8 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
 
 
     
-    [$bakeSceneToCurrentGltf]() {
-      super[$bakeSceneToCurrentGltf]();
+    [$bakeSceneToCurrentGltf](scale: number = 1.0) {
+      super[$bakeSceneToCurrentGltf](scale);
       // const {currentGLTF} = this[$scene];
       if (this[$scene].model != null || this[$scene].currentGLTF != null) {
         console.log('[$bakeSceneToCurrentGltf] called but didn’t work');
@@ -250,7 +250,6 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
 
           //borrowed from onModelLoad:
           // const {correlatedSceneGraph} = preparedGLTF;
-
           // this expects a ThreeGLTF
           // const correlatedSceneGraph:CorrelatedSceneGraph;
           const gl = new GLTFLoader();
@@ -260,9 +259,12 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
   
             if (correlatedSceneGraph != null) {
               this[$model] = new Model(correlatedSceneGraph, this[$getOnUpdateMethod]());
+
               this[$originalGltfJson] = rawGLTF;
               //$scene is a ModelScene. Set its _model here:
-              this[$scene].setBakedObject(finishedGltf.scenes[0]);//scenes in a gltf are an array of groups extending object3d
+              var bakedModel = finishedGltf.scenes[0];
+              bakedModel.scale.set(scale, scale, scale);
+              this[$scene].setBakedObject(bakedModel);//scenes in a gltf are an array of groups extending object3d
               // try this[$scene].setBakedObject(this[$model]);
               
             }

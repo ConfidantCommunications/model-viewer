@@ -221,9 +221,9 @@ export default class ModelViewerElementBase extends ReactiveElement {
   }
 
   /** @export */
-  bakeSceneToCurrentGltf() {
+  bakeSceneToCurrentGltf(scale: number = 1.0) {
     console.log("baking scene!");
-    this[$bakeSceneToCurrentGltf]();
+    this[$bakeSceneToCurrentGltf](scale);
   }
   // /** @export */
   // triggerOnModelLoad() {
@@ -580,7 +580,7 @@ export default class ModelViewerElementBase extends ReactiveElement {
 
   [$onModelLoad]() {
   }
-  [$bakeSceneToCurrentGltf]() {
+  [$bakeSceneToCurrentGltf](scale: number = 1.0) {
   }
 
   [$updateStatus](status: string) {
