@@ -197,7 +197,7 @@ export class ModelScene extends Scene {
   async setBakedObject(obj:Object3D) {
     // "this" is a ModelScene
     //obj comes from gltf.scene which is a group (extending Object3D)
-    debugger;
+    // debugger;
     obj.position.set(0,0,0);
     this._model = obj;
     this.target.add(obj);

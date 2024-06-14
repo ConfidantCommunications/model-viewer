@@ -428,7 +428,7 @@ configuration or device capabilities');
 
       await this[$triggerLoad](); //should just skip since we called this[$markLoaded]();
 
-      debugger;
+      // debugger;
       const {model, shadow, target} = this[$scene];
       if (model == null) {
         console.warn('Cannot prepare USDZ without a model');
@@ -449,11 +449,13 @@ configuration or device capabilities');
 
       target.remove(model);
       model.position.copy(target.position);
+      // model.scale.x = model.scale.y = model.scale.z = 0.01 * 2.54; // 1cm to inches
       model.updateWorldMatrix(false, true);
 
       const arraybuffer = await exporter.parseAsync(model);
 
       model.position.set(0, 0, 0);
+      // model.scale.x = model.scale.y = model.scale.z = 1;
       target.add(model);
 
       const blob = new Blob([arraybuffer], {

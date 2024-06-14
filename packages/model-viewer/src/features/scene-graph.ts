@@ -246,7 +246,7 @@ export const SceneGraphMixin = <T extends Constructor<ModelViewerElementBase>>(
           // preparedGLTF = ModelViewerGLTFInstance.prepare(rawGLTF);
           this[$currentGLTF] = rawGLTF;
           // const mvgi = this[$currentGLTF] as ModelViewerGLTFInstance;
-          debugger;
+          // debugger;
 
           //borrowed from onModelLoad:
           // const {correlatedSceneGraph} = preparedGLTF;
